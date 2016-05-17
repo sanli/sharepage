@@ -1,0 +1,104 @@
+<% include ./inc/head.html %>
+<body>
+  <% include ./inc/navi.html %>
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="container">
+      <div class="row" style="text-align: center; padding-top : 10px;border-bottom: 1px dashed;">
+       <div class="col-md-8 ">
+          <div class="panel panel-default">
+            <div class="panel-heading">统计状态</div>
+            <div class="panel-body">
+              <div class="col-md-4">
+                <h1><span class="glyphicon glyphicon-user"></span></h1>
+                <p><span class="h5">在校学生数: <span id="current_student_num" class="label label-info stat">0</span></span></p>
+              </div>
+              <div class="col-md-4">
+                <h1><span class="glyphicon glyphicon-th"></span></h1>
+                <p><span class="h5">开课班级数: <span id="current_class_num" class="label label-info stat" >0</span></span></p>
+              </div>
+              <div class="col-md-4">
+                <h1><span class="glyphicon glyphicon-map-marker"></span></h1>
+                <p><span class="h5">当前报名次数: <span id="current_student_reg_class_num" class="label label-info stat" >0</span></span></p>
+              </div>
+              <div class="col-md-4">
+                <h1 style="color: #ddd;"><span class="fa fa-group"></span></h1>
+                <p><span class="h5">历史学生数: <span id="history_student_num" class="label label-info stat" style="border-radius: 11.25em;">0</span></span></p>
+              </div>
+              <div class="col-md-4">
+                <h1 style="color: #ddd;"><span class="fa fa-line-chart"></span></h1>
+                <p><span class="h5">历史班级数: <span id="history_class_num" class="label label-info stat" style="border-radius: 11.25em;">0</span></span></p>
+              </div>
+              <div class="col-md-4">
+                <h1 style="color: #ddd;"><span class="fa fa-university"></span></h1>
+                <p><span class="h5">历史报名次数: <span id="history_student_reg_class_num" class="label label-info stat" style="border-radius: 11.25em;">0</span></span></p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="panel panel-info">
+            <div class="panel-heading">快捷入口</div>
+            <div class="panel-body">
+              <div class="col-md-4">
+                <a href="/hlc/web/student/view.html" class="btn btn-info" style="margin-bottom: 7px;">
+                  <h3><span class="glyphicon glyphicon-user"></span></h3>
+                  <span>学生档案</span>
+                </a>
+              </div>
+              <div class="col-md-4">
+                <a href="/hlc/web/classtpl/view.html" class="btn btn-info" style="margin-bottom: 7px;">
+                  <h3><span class="glyphicon glyphicon-folder-close"></span></h3>
+                  <span>课程管理</span>
+                </a>
+              </div>
+              <div class="col-md-4">
+                <a href="/hlc/web/teacher/view.html" class="btn btn-info" style="margin-bottom: 7px;">
+                  <h3><span class="glyphicon glyphicon-align-justify"></span></h3>
+                  <span>教师管理</span>
+                </a>
+              </div>
+              <div class="col-md-4">
+                <a href="/hlc/web/school/view.html" class="btn btn-info" style="margin-bottom: 7px;">
+                  <h3><span class="fa fa-cubes"></span></h3>
+                  <span>分校设置</span>
+                </a>
+              </div>
+              <div class="col-md-4">
+                <a href="/hlc/web/class/view.html" class="btn btn-info" style="margin-bottom: 7px;">
+                  <h3><span class="glyphicon glyphicon-eye-open"></span></h3>
+                  <span>班级管理</span>
+                </a>
+              </div>
+              <div class="col-md-4">
+                <a href="/hlc/web/document/view.html" class="btn btn-info" style="margin-bottom: 7px;">
+                  <h3><span class="glyphicon glyphicon-tasks"></span></h3>
+                  <span>课件资料</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container" style="padding-top: 10px;">
+      
+    </div> <!-- /container -->
+
+    <!-- 一些通用的页面元素和模版 -->
+    <% include ./inc/sharepage.html %>
+
+
+    <!-- JS文件放在靠近HTML页面尾部的地方可以加快页面显示的速度 -->
+    <script src="/js/jquery.js"></script>
+    <script src="/js/bootstrap.js"></script>
+    <script src="/js/sharepage.base.js"></script>
+    <script src="/js/sharepage.js"></script>
+    <script src="/js/sharepage.ext.js"></script>
+    <script src="/js/hlccommons.js"></script>
+    <script src="/js/class/classwidget.js"></script>
+    <script src="/js/classtpl/classtplwidget.js"></script>
+    <script src="/js/notice/noticewidget.js"></script>
+    <script src="/js/goodsales/goodsaleswidget.js"></script>
+    <script src="/js/main/main_jw.js"></script>
+
+<% include ./inc/foot.html %>

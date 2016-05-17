@@ -1,0 +1,122 @@
+<%@ page language="java" pageEncoding="UTF-8" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ include file="../head.jsp" %>
+<% 
+/* 本文件由share.js自动产生于<$=new Date() $>, 产生命令行为: node share.js gen <$=module_name $> */ 
+%>
+<body>    
+  <%@ include file="../navi.jsp" %>
+  <div class="container-fluid">
+    <div class="row">
+
+<!-- 控制条 -->
+<nav class="navbar navbar-default col-md-offset-2 col-md-10 navbar-static-top sub-navbar" role="navigation">
+  <div class="container-fluid">
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <!-- 
+        TODO: 这里加入需要的操作按钮
+        <li><a id="createbtn" href="#">新建<$=options.module_desc $></a></li>
+        -->
+      </ul>
+      <form id="search-form" class="navbar-form navbar-right" role="search">
+        <div class="input-group">
+          <input name="module_name" type="text" class="form-control" placeholder="输入内容快速查询..." data-queryexp='Reg'>
+          <div class="input-group-btn">
+            <button type="submit" class="btn btn-default">查询</button>
+            <a id="searchBtnGroup" type="button" class="btn btn-default" data-toggle="button" autocomplete="off" aria-pressed="false">
+              更多条件 <span class="caret"></span>
+            </a>
+            <a id="editingBtnGroup" type="button" class="btn btn-default" data-toggle="button" autocomplete="off" aria-pressed="false">
+              编辑 <span class="glyphicon glyphicon-pencil"></span>
+            </a>
+          </div>
+        </div>
+      </form>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav><!-- 控制面板 -->
+
+<!-- 实现数据导航功能 -->
+<div class="col-md-2 sidebar">
+  <nav class="navbar navbar-default navbar-static-top sidebar-toolbar" role="navigation">
+    <ul class="nav navbar-nav active">
+        <li><a>分类导航</a></li>
+    </ul>
+  </nav>
+  <div id="navlist" class="nav nav-sidebar"></div>
+</div> <!-- 实现数据导航功能 -->
+
+<!-- 主操作区域 -->
+<div id="mainContent" class="main col-md-offset-2 col-md-10">
+    <!-- 查询面板 -->
+    <div id="searchPanel" class="panel panel-default fade search-panel">
+      <div class="panel-heading">查询条件</div>
+      <!-- TODO : 修改下面的查询条件 -->
+      <div class="panel-body">
+          <form id="detail-search-form" class="form-horizontal">
+              <!--
+              sharepage宏(sharepage macro)会在页面载入后进行展开，展开的结果会替换掉元素的innerHtml
+              宏只会展开一次，展开的参数是当前原素的html()，需要是正确的javascript类。
+              NOTE: 宏是高阶的抽象方法，应该限制使用场景，否则会导致程序难以阅读，性能也可能受到影响。
+              -->
+            <fieldset data-sharepage-macro="queryFieldSetMacro">
+              { /* TODO: 请修改查询字段 */
+                fieldset :[
+                  { name : 'module_name' , label: '模块名称' }, 
+                  { name : 'url' , label: 'URL' }]
+              }
+            </fieldset>
+          </form>
+      </div>
+      <div class="panel-footer" style="height: 50px;"><button id="detailSearchBtn" class="btn btn-primary pull-right">查询</button></div>
+    </div><!-- 查询面板 -->
+
+  <!-- 数据查询结果表格 -->
+  <div id="cellDiv" class="panel panel-default">
+    <div class="panel-heading"><$=options.module_desc $>数据列表</div>
+    <table id="cellTable" class="table table-bordered table-hover"></table>
+    <!-- TODO:  修改表格的字段列表以及支持的Action列表 -->
+    <script type="text/html" id="cellTableTmpl">
+      <@= $.template('cellTableBase', { 
+        /* 显示字段列表 */
+        fieldset :[
+          { field: 'module_name' , title : '模块名称', canSort: true,showViewLink : true }, 
+          { field: 'icon' , title : '模块图标', canSort: false }, 
+          { field: 'url', title: 'URL', canSort: true }
+        ],
+
+        /* 控制Action列表 */
+        actions : [
+          {action: 'action-edit' , title : '修改' , icon: 'glyphicon-edit' }, 
+          {action: 'action-remove' , title : '删除', icon: 'glyphicon-remove' }
+        ],
+
+        // 其他参数
+        opt : {},
+        /* Cell基本数据 */
+        cells : cells,
+        sort : sort
+      }) @>
+    </script>
+    <div class="panel-footer"><div id="pagebar"></div></div>
+  </div>
+
+</div> <!-- 数据查询结果表格 -->
+  </div>
+</div>
+
+  <!-- 一些通用的页面元素和模版 -->
+  <%@ include file="../inc/sharepage.jsp"%>
+
+  <!-- JS文件放在靠近HTML页面尾部的地方可以加快页面显示的速度 -->
+  <script src="<%=basePath%>/js/jquery.js"></script>
+  <script src="<%=basePath%>/js/bootstrap.js"></script>
+  <script src="<%=basePath%>/js/sharepage.base.js"></script>
+  <script src="<%=basePath%>/js/sharepage.js"></script>
+  <script src="<%=basePath%>/js/sharepage.ext.js"></script>
+  <script src="<%=basePath%>/js/hlccommons.js"></script>
+  <script src="<%=basePath%>/js/<$=module_name $>/<$=module_name $>.js"></script>
+<%@ include file="../foot.jsp" %>
+

@@ -1,0 +1,60 @@
+<% include thead.html %>
+
+<body>    
+  <% conf.hide_search = true; %>
+  <% include tnavi.html %>
+  <div class="container-fluid">
+    <div class="row">
+
+<!-- 主操作区域 -->
+<div id="mainContent" class="main col-md-12 ">
+
+  <!-- tourist修改对话框 -->
+  <!-- TODO : 修改下面的数据编辑对话框 -->
+  <div id="moduleDlg" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="header-text">发生错误</h3>
+        </div>
+        <div class="modal-body container-fluid">
+            <div class="alert alert-danger alert-dismissible fade in" role="alert">
+              <h4><%=message %></h4>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a href="/main.html" class="btn btn-danger">返回首页</a>
+            <button id="backbtn" type="button" class="btn btn-default">返回上一页</button>
+        </div>
+      </div>
+    </div>
+  </div><!-- tourist编辑修改对话框 -->
+</div><!-- 数据查询结果表格 -->
+  </div>
+</div>
+
+  <!-- JS文件放在靠近HTML页面尾部的地方可以加快页面显示的速度 -->
+  <% if( target === 'release' ){ %>
+      <script type="text/javascript"> function _cdn(res){ return "http://supperdetailpainter.u.qiniudn.com"+ (res|| "") }</script>
+      <script src="http://cdn.staticfile.org/jquery/1.8.3/jquery.min.js" type="text/javascript"></script>
+      <script src="http://cdn.staticfile.org/twitter-bootstrap/3.1.1/js/bootstrap.min.js" type="text/javascript"></script>
+      <script src="http://supperdetailpainter.u.qiniudn.com/js/cag_<%=stamp %>_min.js" type="text/javascript"></script>
+  <% } else { %>
+    <script type="text/javascript"> function _cdn(res){ return res}</script>
+    <script src="/js/jquery.js" type="text/javascript"></script>
+    <script src="/js/bootstrap.js" type="text/javascript"></script>
+    <!-- cag_xxx_min.js -->
+    <script src="/js/jquery.lazyload.js" type="text/javascript"></script>
+    <script src="/js/sharepage.base.js"></script>
+    <script src="/js/sharepage.js"></script>
+    <script src="/js/sharepage.ext.js"></script>
+    <script src="/js/cagcommons.js"></script>
+  <% } %>
+  <script type="text/javascript">
+    $('#backbtn').click(function(){
+      window.history.back();
+    });
+  </script>
+
+<% include tfoot.html %>
+

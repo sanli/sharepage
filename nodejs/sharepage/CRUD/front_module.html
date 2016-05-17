@@ -1,0 +1,222 @@
+<% 
+/* 本文件由share.js自动产生, 命令行为: node share.js gen <$=module_name $> */ 
+%>
+<% include ../../../views/inc/head.html %>
+<body>    
+  <% include ../../../views/inc/navi.html %>
+  <div class="container-fluid">
+    <div class="row">
+
+<!-- 控制条 -->
+<$ if(options.supportnavi){ $>
+<nav class="navbar navbar-default col-md-offset-2 col-md-10 navbar-static-top sub-navbar" role="navigation" data-sharepage-macro="controlbarMacro">
+<$ } else { $>
+<nav class="navbar navbar-default col-md-12 navbar-static-top sub-navbar" role="navigation" data-sharepage-macro="controlbarMacro">
+<$ } $>
+  <script type="text/json">
+    {
+      // 定义标题栏显示的按钮集合，needright是按钮需要的基本权限，如果用户没有该权限，将不会显示按钮，权限集合参考hlccommons.js -> $M.ACTION，needright为空则不需要任何权限。
+      actions : [
+        {action: 'action-add' , title : '新建<$=options.module_desc $>' , icon: 'glyphicon glyphicon-plus', needright: '添加' },
+<$ if(options.supportbatchdelete){ $>
+        {action: 'action-batchdelete' , title : '删除选中<$=options.module_desc $>' , icon: 'glyphicon glyphicon-trash', needright: '删除' },
+<$ } $>
+<$ if(options.supportexport){ $>
+        {action: 'action-export' , title : '导出数据' , icon: 'glyphicon glyphicon-export', needright: '导出' },
+<$ } $>        
+<$ if(options.supportimport){ $>
+        {action: 'action-import' , title : '导入数据' , icon: 'glyphicon glyphicon-import', needright: '导入' },
+        {action: 'action-import-tmpl' , title : '下载导入模版' , icon: 'glyphicon glyphicon-cloud-download', needright: '导入' },
+<$ } $>        
+      ],
+
+      // 快速查询涉及到的字段名
+      quicksearch : [
+        {field : 'name', name : '请修改速查字段'},
+      ],
+    }
+  </script>
+
+</nav><!-- 控制面板 -->
+
+<$ if(options.supportnavi){ $>
+<!-- 实现数据导航功能 -->
+<div class="col-md-2 sidebar">
+  <nav class="navbar navbar-default navbar-static-top sidebar-toolbar" role="navigation">
+    <ul class="nav navbar-nav active">
+        <li><a>分类导航</a></li>
+    </ul>
+  </nav>
+  <div id="navlist" class="nav nav-sidebar"></div>
+</div> <!-- 实现数据导航功能 -->
+<$ } $>
+
+<!-- 主操作区域 -->
+<$ if(options.supportnavi){ $>
+<div id="mainContent" class="main col-md-offset-2 col-md-10">
+<$ } else { $>
+<div id="mainContent" class="main col-md-12">
+<$ } $>
+    <!-- 查询面板 -->
+    <div id="searchPanel" class="panel panel-default fade search-panel">
+      <div class="panel-heading">查询条件</div>
+      <!-- TODO : 修改下面的查询条件 -->
+      <div class="panel-body">
+          <form id="detail-search-form" class="form-horizontal">
+              <!--
+              sharepage宏(sharepage macro)会在页面载入后进行展开，展开的结果会替换掉元素的innerHtml
+              宏只会展开一次，展开的参数是当前原素的html()，需要是正确的javascript类。
+              NOTE: 宏是高阶的抽象方法，应该限制使用场景，否则会导致程序难以阅读，性能也可能受到影响。
+              -->
+            <fieldset data-sharepage-macro="queryFieldSetMacro">
+              { /* TODO: 请修改查询字段 */
+                fieldset :[
+                  { name : 'module_name' , label: '模块名称' }, 
+                  { name : 'url' , label: 'URL' }]
+              }
+            </fieldset>
+          </form>
+      </div>
+      <div class="panel-footer" style="height: 50px;"><button id="detailSearchBtn" class="btn btn-primary pull-right">查询</button></div>
+    </div><!-- 查询面板 -->
+
+<$ if(options.moduleType === 'submodule'){ 
+  var primary = options.primaymodule.options;
+$>
+  <!-- 路径子模块路径导航 -->
+  <ol class="breadcrumb">
+    <li><a id="primaryBtn" href="<%=basePath%><$=primary.url $>/view.html"><$=primary.module_desc $></a></li>
+    <li id="currentbtn" class="active"><$=options.module_desc $></li>
+  </ol>
+<$ } $>
+
+<$ if(options.breadcrumb){ $>
+  <!-- 模块路径导航，常用来指示当前的页面状态 -->
+  <ol class="breadcrumb">
+    <li>当前状态</li>
+    <li><a href="<$=options.url $>.html"><$=options.module_desc $></a></li>
+  </ol>
+<$ } $>
+
+
+  <!-- 数据查询结果表格 -->
+  <div id="cellDiv" class="panel panel-default">
+    <div class="panel-heading"><$=options.module_desc $>数据列表</div>
+    <table id="cellTable" class="table table-bordered table-hover"></table>
+    <!-- TODO:  修改表格的字段列表以及支持的Action列表 -->
+    <script type="text/html" id="cellTableTmpl">
+      <@= $.template('cellTableBase', { 
+        /* 显示字段列表 */
+        fieldset :[
+          { field: 'module_name' , title : '模块名称', canSort: true,showViewLink : true }, 
+          { field: 'icon' , title : '模块图标', canSort: false }, 
+          { field: 'url', title: 'URL', canSort: true }
+        ],
+
+        /* 控制Action列表 */
+        actions : [
+          {action: 'action-edit' , title : '修改' , icon: 'glyphicon-edit' }, 
+          {action: 'action-remove' , title : '删除', icon: 'glyphicon-remove' }
+        ],
+
+        // 其他参数
+        opt : {},
+        /* Cell基本数据 */
+        cells : cells,
+        sort : sort
+      }) @>
+    </script>
+    <div class="panel-footer"><div id="pagebar"></div></div>
+  </div> <!-- 数据查询结果表格 -->
+
+</div> 
+  </div>
+</div>
+  
+  <!-- <$=module_name $>修改对话框 -->
+  <!-- TODO : 修改下面的数据编辑对话框 -->
+  <div id="moduleDlg" class="modal fade"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <h3 class="header-text">修改<$=options.module_desc $>信息</h3>
+        </div>
+        <div class="modal-body">
+          <ul class="nav nav-tabs" id="buildingNavtab">
+              <li class="active"><a href="#b1" data-toggle="tab">基本<$= options.module_desc $>信息</a></li>
+          </ul>
+          <div style="padding: 10px;">
+            <form id="module-form" class="form-horizontal" role="form">
+              <fieldset data-sharepage-macro="formFieldSetMacro">
+              { /* 字段列表 */
+                fieldset :[
+                  { name : 'module_name' , label: '模块名称', required: true }, 
+                  { name : 'icon' , label: 'ICON', required: false, readonly : false }, 
+                  { name : 'url' , label: 'URL', required: true, readonly : false }, 
+                  { name : 'parent_id' , label: '父模块', required: true }]
+              }
+              </fieldset>
+            </form>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn cancle" data-dismiss="modal" aria-hidden="true">取消</button>
+          <button id="saveBtn" class="btn btn-primary" data-doing-text="正在保存...">确定</button>
+        </div>
+      </div>
+    </div>
+  </div> <!-- <$=module_name $>编辑修改对话框 -->
+
+
+  <!-- <$=module_name $>信息对话框 -->
+  <div id="moduleViewDlg" class="modal fade"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <h3 class="header-text"><$=options.module_desc $>信息</h3>
+        </div>
+        <div class="modal-body">
+          <ul class="nav nav-tabs" id="buildingNavtab">
+              <li class="active"><a href="#b1" data-toggle="tab">模块<$=options.module_desc $>信息</a></li>
+          </ul>
+          <div style="padding: 10px;">
+            <form id="module-form-view" class="form-horizontal" role="form">
+              <fieldset data-sharepage-macro="formViewFieldSetMacro">
+              { /* 只读字段 */
+                fieldset :[
+                  { name : 'module_name' , label: '模块名称'}, 
+                  { name : 'icon' , label: 'ICON' }, 
+                  { name : 'url' , label: 'URL' }, 
+                  { name : 'parent_id' , label: '父模块'}]
+              }
+              </fieldset>
+            </form>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn cancle" data-dismiss="modal" aria-hidden="true">关闭</button>
+        </div>
+      </div>
+    </div>
+  </div><!-- sysmodule编辑修改对话框 -->
+
+  <!-- TODO: 引用的各种Widget -->
+  
+  <!-- 一些通用的页面元素和模版 -->
+  <% include ../../../views/inc/sharepage.html %>
+
+  <!-- JS文件放在靠近HTML页面尾部的地方可以加快页面显示的速度 -->
+  <script src="/js/jquery.js"></script>
+  <script src="/js/bootstrap.js"></script>
+  <script src="/js/sharepage.base.js"></script>
+  <script src="/js/sharepage.js"></script>
+  <script src="/js/sharepage.ext.js"></script>
+<$ if(options.supportimport){ $>
+  <script src="/js/websocketclient-gen.js"></script>
+<$}$>
+  <script src="/js/commons.js"></script>
+  <script src="/js/<$=module_name $>.js"></script>
+<% include ../../../views/inc/foot.html %>
+

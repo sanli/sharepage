@@ -1,0 +1,22 @@
+README
+=======================
+这个项目按照sharepage的方式组织，简单的文件描述如下:
+
+目录说明：
+
+sharepage: sharecli.js工具目录，包含代码生成模版，和历史版本文件
+
+data: 数据访问通用代码
+routes: web服务通用代码
+public: 公共模块
+views: 页面公共代码
+modules: 业务模块代码
+
+
+
+其他说明：
+由于使用了模版自动合并，系统会生成一些历史备份文件，这些文件不要上传到SVN上，请使用一下命令过滤掉这些文件：
+
+>svn ps svn:global-ignores "*.html.*
+*.js.*" .
+

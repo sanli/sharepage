@@ -1,0 +1,48 @@
+{
+	"user" : {
+		"template" : "CRUD",
+		"outdir" : "../sys",
+		"sysmodule" : true,
+		"options" : {
+			"module_desc" : "用户管理",
+			"url" : "/sys/user"
+		}
+	},
+
+	"role" : {
+		"template" : "CRUD",
+		"comment" : "管理角色，以及没个角色对不同模块的权限设置",
+		"outdir" : "../sys",
+		"sysmodule" : true,
+		"options" : {
+			"module_desc" : "角色管理",
+			"url" : "/sys/role"
+		}
+	},
+
+	"enum" : {
+		"template" : "CRUD",
+		"comment" : "数据字典管理，设置系统中用到的各种枚举类型",
+		"outdir" : "../sys",
+		"sysmodule" : true,
+		"options" : {
+			"module_desc" : "数据字典管理",
+			"url" : "/sys/enum",
+			"supportnavi" : true,
+			"supportbatchdelete" : true,
+			"supportimport" : true,
+			"supportexport" : true
+		}
+	},
+
+	"project" : {
+		"template" : "CRUD",
+		"outdir" : "../modules/project",
+		"sysmodule" : false,
+		"options" : {
+			"module_desc" : "项目管理",
+			"url" : "/project",
+			"supportexport" : true
+		}
+	}
+}

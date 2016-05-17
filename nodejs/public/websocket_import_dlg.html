@@ -1,0 +1,25 @@
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <h3 class="header-text">导入模块数据</h3>
+        </div>
+        <div class="modal-body">
+          <form id="import-form" class="form-horizontal container-fluid" role="form">
+            <div class="form-group col-md-12" style="display:none;">
+              <label class="col-sm-4 control-label">所属项目*</label>
+              <div class="col-sm-8">
+                <select name="projectId" class="form-control" data-sfcontrol="project"></select>
+              </div>
+            </div>
+          </form>
+          <h5>验证错误记录:</h5>
+          <pre id="valideMsgDiv" class="well" style="word-wrap: normal;overflow: scroll;max-height: 600px;"></pre>
+          <h5>当前处理记录:</h5>
+          <pre id="statusDiv" class="well" style="word-wrap: normal;overflow: scroll;max-height: 300px;"></pre>
+        </div>
+        <div class="modal-footer">
+          <div id="fileUploader"></div>
+          <button class="btn cancle" data-dismiss="modal" aria-hidden="true">取消</button>
+          <button id="saveBtn" class="btn btn-primary">确定</button>  
+        </div>
+      </div>

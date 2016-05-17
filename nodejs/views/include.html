@@ -1,0 +1,16 @@
+<%@ page language="java" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html;charset=UTF-8"%>
+<%
+    String webAppUri = request.getContextPath();
+	int port = request.getServerPort();
+	String basePath;
+	if(port == 80){
+		basePath = request.getScheme()+"://"+request.getServerName()+webAppUri;
+	}else{
+		basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+webAppUri;
+	}
+%>
+<script type="text/javascript">
+    var basePath = '<%=basePath%>';
+    var webAppUri = '<%=webAppUri%>';
+</script>

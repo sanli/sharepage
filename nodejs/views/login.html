@@ -1,0 +1,110 @@
+<%@ page language="java" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html;charset=UTF-8"%>
+<%@ include file="../head.jsp"%>
+<link href="<%=basePath%>/css/carousel.css" rel="stylesheet">
+<body>
+    
+<header role="banner">
+    <div class="navbar navbar-inverse navbar-fixed-top main-navbar" role="navigation">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <%-- <img src="<%=basePath%>/images/logo-desk.png" alt="Desk.com" id="brand" height="50"> --%>
+          <a class="navbar-brand" href="#">翰林分校管理系统</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="jumbotron jumbotron-homepage woodgrain">
+      <div class="container">
+        <h1>
+          翰林学校管理系统<br>让我们一起为学生提供一流的教育!
+        </h1>
+        <p class="lead" >分校管理系统提供了方便快捷的创建班级、学生报名、学生查询等诸多功能。
+<!--校长办、教务主管、财务以及系统管理等相关人员通过该系统可以快速精准获取和操作各自关心的数据。学校总部人员可以通过系统实时的掌握各个分校的教学、
+学生报名和学习、等所有各项指标状态--></p>
+        <p>
+          <a id="jumpstart" href="#" class="btn btn-lg btn-success btn-round btn-no-border btn-uppercase">
+            开始使用
+          </a>
+        </p>
+      </div>
+      <div class="photo photo-ipad animated  hidden-xs" title="Photo of Desk on iPad"></div>
+      <div class="jumbotron-fade-top"></div>
+      <div class="jumbotron-fade-bottom"></div>
+    </div>    
+        
+  </header>
+
+    <!-- Marketing messaging and featurettes
+    ================================================== -->
+    <!-- Wrap the rest of the page in another container to center all the content. -->
+
+    <div class="container marketing">
+
+      <!-- 登录窗口 -->
+      <div class="section section-news section-grey text-center">
+        <div class="container">
+          <p>
+            <span class="article-excerpt">输入账户，登入系统开始使用</span>
+          </p>
+          <form id="loginform" class="form-inline">
+            <div class="form-group">
+              <label class="sr-only" for="exampleInputEmail3">用户名</label>
+              <input type="input" class="form-control" name="username" placeholder="用户名" value="">
+            </div>
+            <div class="form-group">
+              <label class="sr-only" for="exampleInputPassword3">密码</label>
+              <input type="password" class="form-control" name="password" placeholder="密码" value="">
+            </div>
+            <button type="submit" class="btn btn-default">登录</button>
+          </form>
+        </div>
+      </div>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="<%=basePath%>/js/jquery.js"></script>
+    <script src="<%=basePath%>/js/bootstrap.js"></script>
+    <script src="<%=basePath%>/js/sharepage.base.js"></script>
+    <script src="<%=basePath%>/js/sharepage.js"></script>
+    <script src="<%=basePath%>/js/sharepage.ext.js"></script>
+    
+    <script>
+        // 标题栏自动隐藏
+
+        $('#jumpstart').click(function(e){
+          e.preventDefault();
+          $('input[name=username]').focus();
+        });
+
+        $('#loginform').submit(function(e){
+          e.preventDefault();
+          var data = $('#loginform').getdata();
+          $M.doquery('/web/sys/user/login.do'
+            , { username : data.username, password : data.password } 
+            , { successfn : function(){
+                window.location.href = "<%=basePath%>/web/fx/main.html";//window.location.href.replace('login', 'index');
+              }, alertPosition : '#loginform' });
+        }); 
+        
+        $(document).ready( function() {
+          $('img.lazy').lazyload({
+            effect : "fadeIn",
+            skip_invisible : true
+          });
+        });
+    </script>
+
+    <%@ include file="./show.jsp"%>
+<%@ include file="../foot.jsp" %>

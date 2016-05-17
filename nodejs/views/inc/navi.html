@@ -1,0 +1,70 @@
+    <div class="navbar navbar-inverse navbar-fixed-top main-navbar" role="navigation">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">展开</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand pull-right" href="/main.html">
+            <img class="img-circle" src="/images/sharepage.png" style="width: 30px; height: 30px;position: absolute;top: 10px;left: 5px;">
+             <span style="margin-left: 18px;"> SharePage PROJECT </span>
+          </a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="/main.html"><span class="glyphicon glyphicon-home"></span>首页</a></li>
+            <%
+            var moduleTree = commons.getModuleTree();
+            var fulllable = moduleTree.length > 9 ;
+            moduleTree.forEach(function(module){
+              if(!module.active) return;
+              if(!commons.hasright(user, module.module_id, '查询')) return;
+              if(module.submodules.length === 0){%>
+                <li><a href="<%=module.url%>.html<%= module.init_status ? '#' + module.init_status : '' %>"><%= module.module_name %></a></li>
+              <%}else{%>
+                <li class="dropdown">
+                  <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    <span class="glyphicon ${module.icon}"></span> <%= module.module_name %>
+                    <b class="caret"></b>
+                  </a>
+                  <ul class="dropdown-menu">
+                  <%module.submodules.forEach(function(submodule){
+                    if(!submodule.active) return;
+                  %>
+                    <li><a href="<%= submodule.url %>.html<%= submodule.init_status ? '#' + submodule.init_status : '' %>">
+                      <span class="glyphicon <%= submodule.icon %>"></span> <%= submodule.module_name %></a></li>
+                  <%})%>
+                  </ul>
+                </li>
+              <%}%>
+            <%});%>
+          </ul>
+          <ul class="nav navbar-nav pull-right">
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    当前用户[ <span><%= user.real_name %></span> ]<b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a>角色 : <%= user.role %></a></li>
+                    <li class="divider"></li>
+                    <li><a id="myinfoBtn">我的信息</a></li>
+                    <li><a id="changePasswordBtn">修改密码</a></li>
+                    <li><a href="/signout">退出系统</a></li>
+                </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 修改密码对话框 -->
+    <div id="changePass" class="modal fade"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog" style="width: 600px;"><div class="modal-content"></div></div>
+    </div>
+
+    <!-- 个人信息对话框 -->
+    <div id="myInfo" class="modal fade"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog" style="width: 600px;"><div class="modal-content"></div></div>
+    </div>

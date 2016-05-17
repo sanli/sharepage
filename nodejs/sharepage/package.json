@@ -1,0 +1,27 @@
+{
+  "name": "hlc",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "underscore": "*",
+    "express": "*",
+    "express-session": "*",
+    "body-parser": "*",
+    "compression": "*",
+    "morgan": "*",
+    "method-override": "*",
+    "cookie-parser": "*",
+    "serve-favicon": "*",
+    "errorhandler": "*",
+    "serve-static": "*",
+    "ejs": "*",
+    "stylus": "*",
+    "dateformat": "*",
+    "async": "*",
+    "winston": "*",
+    "uglify-js": "~2.4.13",
+    "jake": "~0.7.9",
+    "jshint": "~2.4.4",
+    "fs-extra" : "*"
+  }
+}

@@ -1,0 +1,14 @@
+@media print {
+   /* 为打印设置的样式 */
+   .td-label {
+	   	width: 120px;
+	   	text-align: right;
+	   	background-color: #f5f5f5;
+	}
+
+}
+
+.td-label {
+   	width: 120px;
+   	text-align: right;
+}

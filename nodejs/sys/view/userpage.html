@@ -1,0 +1,190 @@
+<% include ../../views/inc/head.html %>
+<body>    
+  <% include ../../views/inc/navi.html %>
+  <div class="container-fluid">
+    <div class="row">
+
+<!-- 控制条 -->
+<nav class="navbar navbar-default col-md-12 navbar-static-top sub-navbar" role="navigation" data-sharepage-macro="controlbarMacro">
+  <script type="text/json">
+    {
+      // 定义标题栏显示的按钮集合，needright是按钮需要的基本权限，如果用户没有该权限，将不会显示按钮，权限集合参考hlccommons.js -> $M.ACTION，needright为空则不需要任何权限。
+      actions : [
+        {action: 'action-add' , title : '新建用户' , icon: 'glyphicon glyphicon-plus', needright: '添加' },
+        
+        
+      ],
+
+      // 快速查询涉及到的字段名
+      quicksearch : [
+        {field : 'login_name', name : '登录用户名'},
+        {field : 'real_name', name : '真实用户名'},
+      ],
+    }
+  </script>
+</nav><!-- 控制面板 -->
+
+
+
+<!-- 主操作区域 -->
+
+<div id="mainContent" class="main col-md-12">
+
+    <!-- 查询面板 -->
+    <div id="searchPanel" class="panel panel-default fade search-panel">
+      <div class="panel-heading">查询条件</div>
+      <!-- TODO : 修改下面的查询条件 -->
+      <div class="panel-body">
+          <form id="detail-search-form" class="form-horizontal">
+              <!--
+              sharepage宏(sharepage macro)会在页面载入后进行展开，展开的结果会替换掉元素的innerHtml
+              宏只会展开一次，展开的参数是当前原素的html()，需要是正确的javascript类。
+              NOTE: 宏是高阶的抽象方法，应该限制使用场景，否则会导致程序难以阅读，性能也可能受到影响。
+              -->
+            <fieldset data-sharepage-macro="queryFieldSetMacro">
+              { /* TODO: 请修改查询字段 */
+                fieldset :[
+                  { name : 'login_name' , label: '登录用户名', queryexp: 'Reg' }, 
+                  { name : 'real_name' , label: '真实用户名', queryexp: 'Reg' }]
+              }
+            </fieldset>
+          </form>
+      </div>
+      <div class="panel-footer" style="height: 50px;"><button id="detailSearchBtn" class="btn btn-primary pull-right">查询</button></div>
+    </div><!-- 查询面板 -->
+
+  <!-- 数据查询结果表格 -->
+  <div id="cellDiv" class="panel panel-default">
+    <div class="panel-heading">用户数据列表</div>
+    <table id="cellTable" class="table table-bordered table-hover"></table>
+    <!-- TODO:  修改表格的字段列表以及支持的Action列表 -->
+    <script type="text/html" id="cellTableTmpl">
+      <@= $.template('cellTableBase', { 
+        /* 显示字段列表 */
+        fieldset :[
+          { field: 'login_name' , title : '登录用户名', canSort: true,
+            showViewLink : true }, 
+          { field: 'real_name' , title : '实际用户名', canSort: false }, 
+          { field: 'role', title: '权限角色', canSort: true, type: 'select', 
+            enums: <%- commons.getRoleListJSON() %> },
+          { field: 'city', title: '地市', canSort: false },
+          { field: 'lastlogin_time', title: '最后登录时间', canSort: false },
+          { field: 'login_times', title: '登录次数', canSort: false },
+          { field: 'active', title: '账户状态', canSort: false, type: 'select', 
+            enums: [
+              { value : true , label : '启用'},
+              { value : false , label : '停用'},
+            ]}
+        ],
+
+        /* 控制Action列表 */
+        actions : [
+          {action: 'action-edit' , title : '修改账户' , icon: 'glyphicon-edit', needright: '修改' },
+          {action: 'action-edit' , title : '冻结账户' , icon: 'glyphicon-edit', needright: '修改' },  
+          {action: 'action-remove' , title : '删除账户', icon: 'glyphicon-remove', needright: '删除' }
+        ],
+
+        // 其他参数
+        opt : {},
+        /* Cell基本数据 */
+        cells : cells,
+        sort : sort
+      }) @>
+    </script>
+    <div class="panel-footer"><div id="pagebar"></div></div>
+  </div>
+
+</div> <!-- 数据查询结果表格 -->
+  </div>
+</div>
+  
+  <!-- user修改对话框 -->
+  <!-- TODO : 修改下面的数据编辑对话框 -->
+  <div id="moduleDlg" class="modal fade"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <h3 class="header-text">修改用户信息</h3>
+        </div>
+        <div class="modal-body">
+          <ul class="nav nav-tabs" id="buildingNavtab">
+              <li class="active"><a href="#b1" data-toggle="tab">基本用户信息</a></li>
+          </ul>
+          <div style="padding: 10px;">
+            <form id="module-form" class="form-horizontal" role="form">
+              <fieldset data-sharepage-macro="formFieldSetMacro">
+              { /* 字段列表 */
+                fieldset :[
+                  { name : 'login_name' , label: '登录用户名', required: true, readonly: true }, 
+                  { name : 'real_name' , label: '实际用户名', required: false },
+                  { name : 'password' , label: '登录密码', required: true },  
+                  { name : 'role' , label: '权限角色', required: true, type: 'select', 
+                    enums: <%- commons.getRoleListJSON() %> },
+                  { name : 'city' , label: '地市', type: 'select', 
+                    enums : <%=commons.getEnumListJSON('安徽.地市') %> },
+                  { name : 'active' , label: '是否可用', type: 'checkbox' }
+                ]
+              }
+              </fieldset>
+            </form>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn cancle" data-dismiss="modal" aria-hidden="true">取消</button>
+          <button id="saveBtn" class="btn btn-primary" data-doing-text="正在保存...">确定</button>
+        </div>
+      </div>
+    </div>
+  </div> <!-- user编辑修改对话框 -->
+
+
+  <!-- user信息对话框 -->
+  <div id="moduleViewDlg" class="modal fade"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <h3 class="header-text">用户信息</h3>
+        </div>
+        <div class="modal-body">
+          <ul class="nav nav-tabs" id="buildingNavtab">
+              <li class="active"><a href="#b1" data-toggle="tab">基本信息</a></li>
+          </ul>
+          <div style="padding: 10px;">
+            <form id="module-form-view" class="form-horizontal" role="form">
+              <fieldset data-sharepage-macro="formViewFieldSetMacro">
+              { /* 只读字段 */
+                fieldset :[
+                  { name : 'login_name' , label: '登录用户名', required: true }, 
+                  { name : 'real_name' , label: '实际用户名', required: false, readonly  : false }, 
+                  { name : 'role' , label: '权限角色', required: true, type: 'select', 
+                    enums: <%= commons.getRoleListJSON() %> },
+                  { name : 'active' , label: '是否激活', type: 'checkbox' }
+                ]
+              }
+              </fieldset>
+            </form>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn cancle" data-dismiss="modal" aria-hidden="true">关闭</button>
+        </div>
+      </div>
+    </div>
+  </div><!-- sysmodule编辑修改对话框 -->
+
+  <!-- 一些通用的页面元素和模版 -->
+  <% include ../../views/inc/sharepage.html %>
+
+  <!-- JS文件放在靠近HTML页面尾部的地方可以加快页面显示的速度 -->
+  <script src="/js/jquery.js"></script>
+  <script src="/js/bootstrap.js"></script>
+  <script src="/js/sharepage.base.js"></script>
+  <script src="/js/sharepage.js"></script>
+  <script src="/js/sharepage.ext.js"></script>
+
+  <script src="/js/commons.js"></script>
+  <script src="/js/user.js"></script>
+<% include ../../views/inc/foot.html %>
+

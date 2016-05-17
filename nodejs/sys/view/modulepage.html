@@ -1,0 +1,221 @@
+<% include ../../views/inc/head.html %>
+<body>
+  <% include ../../views/inc/navi.html %>
+  <div class="container-fluid">
+    <div class="row">
+
+
+<nav class="navbar navbar-default col-md-offset-2 col-md-10 navbar-static-top sub-navbar" role="navigation" data-sharepage-macro="controlbarMacro">
+  <script type="text/json">
+    {
+      // 定义标题栏显示的按钮集合，needright是按钮需要的基本权限，如果用户没有该权限，将不会显示按钮，权限集合参考hlccommons.js -> $M.ACTION，needright为空则不需要任何权限。
+      actions : [
+        {action: 'action-add' , title : '新建系统模块' , icon: 'glyphicon glyphicon-plus', needright: '添加' },
+      ],
+
+      // 快速查询涉及到的字段名
+      quicksearch : [
+        {field : 'module_name', name : '模块名称'},
+      ],
+    }
+  </script>
+
+</nav><!-- 控制面板 --> 
+
+<div class="col-md-2 sidebar">
+  <nav class="navbar navbar-default navbar-static-top sidebar-toolbar" role="navigation">
+    <ul class="nav navbar-nav active">
+        <li><a>顶层系统模块</a></li>
+    </ul>
+    <ul class="nav navbar-nav pull-right">
+        <li calss="active"><a class="btn btn-defalut" data-toggle="button"><span class="glyphicon glyphicon-resize-full"></span></a></li>
+    </ul>
+  </nav>
+  <div id="navlist" class="nav nav-sidebar"></div>
+</div>
+
+<!-- 主操作区域 -->
+<div id="mainContent" class="main col-md-offset-2 col-md-10">
+
+    <!-- 查询面板 -->
+    <div id="searchPanel" class="panel panel-default fade search-panel">
+      <div class="panel-heading">查询条件</div>
+      <div class="panel-body">
+        <form id="detail-search-form" class="form-horizontal">
+          <!-- 
+            sharepage宏(sharepage macro)会在页面载入后进行展开，展开的结果会替换掉元素的innerHtml
+            宏只会展开一次，展开的参数时当前原素的val()，需要是正确的javascript类
+            NOTE: 宏是高阶的抽象方法，应该显示使用场景，否则会导致程序难以阅读，性能也可能受到影响。
+            -->
+          <fieldset data-sharepage-macro="queryFieldSetMacro">
+            { /* 查询字段 */
+              fieldset :[
+                { name : 'module_name' , label: '模块名称', queryexp : 'Reg' }, 
+                { name : 'url' , label: 'URL' },
+                { name : 'parent_id' , label: '父模块' , type : 'select',
+                  enums : <%=commons.getModuleListJSON() %> },
+                ]
+            }
+          </fieldset>
+        </form>
+      </div>
+      <div class="panel-footer" style="height: 50px;"><button id="detailSearchBtn" class="btn btn-primary pull-right">查询</button></div>
+    </div>
+
+  <!-- 数据查询结果表格 -->
+  <div id="cellDiv" class="panel panel-default">
+    <div class="panel-heading">系统模块数据</div>
+    <table id="cellTable" class="table table-bordered table-hover"></table>
+    <script type="text/html" id="cellTableTmpl">
+      <@= tmpl('cellTableBase', { 
+        /* 显示字段列表 */
+        fieldset :[
+          { field: '_id' , title : '模块编号', canSort: false }, 
+          { field: 'parent_id' , title : '父模块', canSort: false }, 
+          { field: 'module_name' , title : '模块名称', canSort: false, showViewLink : true}, 
+          { field: 'icon' , title : '模块图标', canSort: false,
+            formatfn : function(v) {
+              return '<span class="glyphicon ' + v.icon + '"></span>';
+            }}, 
+          { field: 'url', title: 'URL', canSort: false, 
+            formatfn : function(v) {
+              return '<a href="' + v.url + '.html">' + v.url + '</a>';
+            }},
+          { field: 'active', title: '启用', canSort: false, 
+            formatfn : function(v) {
+              return v.active === true ? '是' : '否';
+            }},
+          { field: 'order', title: '排序序号', canSort: true },
+        ],
+
+        /* 控制Action列表 */
+        actions : [
+          {action: 'action-edit' , title : '修改' , icon: 'glyphicon-edit', needright: '修改' }, 
+          {action: 'action-remove' , title : '删除', icon: 'glyphicon-remove', needright: '删除' }
+        ],
+
+        // 其他参数
+        opt : {},
+        /* Cell基本数据 */
+        cells : cells,
+        sort : sort
+      }) @>
+    </script>
+    <div class="panel-footer"><div id="pagebar"></div></div>
+  </div>
+</div><!-- 数据查询结果表格 -->
+  </div>
+</div>
+
+  <!-- sysmodule修改对话框 -->
+  <div id="moduleDlg" class="modal fade"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <h3 class="header-text">新建/修改模块信息</h3>
+        </div>
+        <div class="modal-body">
+          <ul class="nav nav-tabs" id="buildingNavtab">
+              <li class="active"><a href="#b1" data-toggle="tab">模块基本信息</a></li>
+          </ul>
+          <div style="padding: 10px;">
+            <form id="module-form" class="form-horizontal" role="form">
+              <fieldset data-sharepage-macro="formFieldSetMacro">
+              { /* 查询字段 */
+                fieldset :[
+                  { name : '_id' , label: '编号', type: 'span' }, 
+                  { name : 'module_name' , label: '模块名称', required: true }, 
+                  { name : 'module_id' , label: '模块编号', required: true }, 
+
+                  { name : 'parent_id' , label: '父模块', required: true, readonly : true,
+                    type: 'sharepage-control', prototype : 'module-select' }, 
+
+                  { name : 'icon' , label: 'ICON', required: false, readonly : false ,
+                    type: 'sharepage-control', prototype : 'icon-select'}, 
+
+                  { name : 'url' , label: 'URL', required: true },
+                  { name : 'init_status' , label: '初始状态', required: false },
+                  { name : 'active' , label: '是否激活', type: 'checkbox' },
+                  { name : 'order' , label: '排序序号' },
+                ]
+              }
+              </fieldset>
+              <fieldset>
+                <div class="form-group col-md-12">
+                  <label class="col-sm-2 control-label">本模块的操作权限*</label>
+                  <div class="col-sm-10">
+                    <div class="form-group col-md-12" >
+                    <div data-sharepage-macro="action-list">
+                      { opt : { 
+                          checked : [0,1,2,3,4,5,6,7,8,9],
+                          name : 'actionList'
+                        }
+                      }
+                    </div>
+                  </div>
+                </div>
+              </fieldset>
+            </form>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn cancle" data-dismiss="modal" aria-hidden="true">取消</button>
+          <button id="saveBtn" class="btn btn-primary" data-doing-text="正在保存...">确定</button>  
+        </div>
+      </div>
+    </div>
+  </div><!-- sysmodule编辑修改对话框 -->
+
+  <!-- sysmodule信息对话框 --> 
+  <div id="moduleViewDlg" class="modal fade"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <h3 class="header-text">模块信息</h3>
+        </div>
+        <div class="modal-body">
+          <ul class="nav nav-tabs" id="buildingNavtab">
+              <li class="active"><a href="#b1" data-toggle="tab">模块基本信息</a></li>
+          </ul>
+          <div style="padding: 10px;">
+            <form id="module-form-view" class="form-horizontal" role="form">
+              <fieldset data-sharepage-macro="formViewFieldSetMacro">
+              { /* 查询字段 */
+                fieldset :[
+                  { name : 'id' , label: '编号', type: 'span' }, 
+                  { name : 'module_name' , label: '模块名称', required: true }, 
+                  { name : 'module_id' , label: '模块编号', required: true }, 
+                  { name : 'parent_id' , label: '父模块', required: true },
+                  { name : 'icon' , label: 'ICON', required: false, readonly : false }, 
+                  { name : 'url' , label: 'URL', required: true },
+                  { name : 'owner_system' , label: '所属系统', required: true , 
+                      type : 'multiselect' , 
+                      enums : <%= commons.getDictListJSON("system_title") %> }, 
+                  { name : 'active' , label: '是否激活', type: 'checkbox' }
+                ]
+              }
+              </fieldset>
+            </form>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn cancle" data-dismiss="modal" aria-hidden="true">关闭</button>
+        </div>
+      </div>
+    </div>
+  </div><!-- sysmodule编辑修改对话框 -->
+
+  <!-- 一些通用的页面元素和模版 -->
+  <% include ../../views/inc/sharepage.html %>
+
+  <!-- JS文件放在靠近HTML页面尾部的地方可以加快页面显示的速度 -->
+  <script src="/js/jquery.js"></script>
+  <script src="/js/bootstrap.js"></script>
+  <script src="/js/sharepage.base.js"></script>
+  <script src="/js/sharepage.js"></script>
+  <script src="/js/sharepage.ext.js"></script>
+  <script src="/js/commons.js"></script>
+  <script src="/js/module.js"></script>
+<% include ../../views/inc/foot.html %>

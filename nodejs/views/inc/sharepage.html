@@ -1,0 +1,511 @@
+<% 
+// 通用页面元素包含文件，大部分功能页面需要包含本文件已提供hlccommons.js提供的功能
+%>
+<!-- 
+确认对话框  
+-->
+<div id="confirmDlg" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog short-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel">再次确认:</h3>
+      </div>
+      <div class="modal-body">
+        <p>是否确认要做这个动作？</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary ok" data-dismiss="modal">确认</button>
+        <button class="btn no" data-dismiss="modal">取消</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 导入信息对话框 -->
+<div id="importDlg" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog"><div class="modal-content"></div></div>
+</div>
+
+
+<!-- 
+确认对话框  
+-->
+<div id="messageDlg" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel">消息</h3>
+      </div>
+      <div class="modal-body">
+        <p></p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn no" data-dismiss="modal">关闭</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 
+    翻页控制条模版，用于创建翻页控制器
+-->
+<script type="text/html" id="pagebarTpl">
+    <ul class="pagination">
+      <li><a>共有记录：<@=count @>条</a></li>
+      <li <@=(currentIdx===0 ? 'class="active"':"" ) @> >
+        <a href="#skipto=0">第一页</a></li>
+      <li <@=(startPage === pre ? 'class="active"':"" ) @> >
+        <a href="#skipto=<@=pre @> ">...</a></li>
+        <@ for( i = startPage ; i<= endPage; i++){ @>
+          <li <@=(currentIdx === i ? 'class="active"':"" ) @> >
+            <a href="#skipto=<@=i@>"><@=i + 1 @></a></li>
+        <@ } @>
+        <li <@= (endPage === next ? 'class="active"':"" ) @> >
+          <a href="#skipto=<@=next@>">...</a></li>
+        <li><a href="#skipto=<@=pageCnt-1 @>">最后一页</a></li>
+    </ul>
+</script> <!-- 显示模板 -->
+
+<!-- 
+    数据列表宏，用于创建数据列表
+    参数: 
+        @fieldset: 字段列表，以及字段的显示方式
+-->
+<script type="text/html" id="cellTableBase">
+<@ if(!opt.skiphead){ @>
+  <thead> 
+    <tr>
+    <th class="action-ctl action-checkbox"><input class="selectall" type="checkbox"></th>
+    <@
+    var titles = fieldset;
+    for(i = 0 ; i<= titles.length -1 ; i++){
+      title = titles[i];
+    @>
+      <th class="<@= title.class @>">
+        <@ if(title.canSort){ @>
+          <a href="#sortby=<@=title.field @>&sortorder=<@=-(sort.order) @>" class="sortlink"> 
+        <@ } else { @>
+          <a> 
+        <@ } @>
+            <@=title.title @>
+            <@ if ( sort.by === title.field){ @>
+            <i class="glyphicon <@= sort.order === '-1' ? 'glyphicon-chevron-down' : 'glyphicon-chevron-up' @>"/>
+            <@ } @>
+            </a></th>
+    <@ } @>
+      <th class="action-ctl"><a>操作</a></th>
+    </tr>
+  </thead> 
+<@ } @>
+  <tbody id="sysmoduleListTb">
+  <@ if(cells.length === 0) { @> 
+    <tr><td colspan="<@=titles.length @>"><span class="label label-default">目前没有数据</span></td></tr>
+  <@ } @>
+   <@ 
+    for( i = 0 ; i<= cells.length - 1; i++) { 
+        var cell = cells[i];
+   @>
+      <tr data-id="<@=cell._id @>">
+        <td class="action-ctl action-checkbox fade"><input type="checkbox" title="选中"></td>
+        <@ _.each(fieldset, function(field){ 
+            @>
+            <td>
+            <@ if(field.showViewLink){ @>
+              <a class="action action-view"><@= cell[field.field] @></a>
+            <@ } else if(field.formatfn){ @>
+              <@= field.formatfn(cell) @>
+            <@ } else if(field.enums){ 
+              var tenum = _.find(field.enums, function(tenum){ 
+                return tenum.value == cell[field.field] ;
+              });
+            @>
+              <@=tenum ? tenum.label : cell[field.field] @>
+            <@ } else { @>
+              <@= cell[field.field] @>
+            <@ } @>
+            </td>
+        <@ }); @>
+        <td class="action-ctl action-bar fade">
+            <@ 
+            actions = _.filter(actions, function(action){
+                return $M.hasRight(action.needright);
+            });
+            if( actions.length === 0 ){ @>
+              没有可用操作
+            <@ } else { @>
+              <div class="btn-group btn-group-sm" role="group">
+              <@ _.each(actions, function(action){ @>
+                  <@ if(action.formatfn){ @>
+                    <@= action.formatfn(cell, action) @>
+                  <@ } else if(action.filterfn){ @>
+                    <@ if( action.filterfn(cell, action) ){ @>
+                      <a class="btn btn-link action <@=action.action @>"><@=action.title @> <i class="glyphicon <@=action.icon @>"></i></a>
+                    <@ } @>
+                  <@ } else { @>
+                    <a class="btn btn-link action <@=action.action @>"><@=action.title @> <i class="glyphicon <@=action.icon @>"></i></a>
+                  <@ } @>
+              <@ }); @>
+              </div>
+            <@}@>
+        </td>
+      </tr>
+   <@= opt.afterline ? opt.afterline(cell) : '' @>
+   <@ } @>
+  </tbody>
+</script>
+
+<!-- 拼装查询页面字段列表模版 -->
+<script type="text/html" id="queryFieldSetMacro">
+<@ 
+_.each( fieldset, function(field){ 
+    var wcol = 12 / (field.col || 2),
+        wlabel = wcol > 6 ? 2 : 4,
+        winput = wcol > 6 ? 10 : 8;
+
+    var width = 'col-md-' + (field.width || 6),
+        required = field.required || false,
+        // 查询表达式
+        queryexp = field.queryexp,
+        type = field.type || 'input';
+@>
+    <div class="form-group col-md-<@=wcol @>">
+        <label class="control-label col-md-<@=wlabel @>"><@=field.label @><@=required ? "*" : '' @></label>
+        <div class="controls col-md-<@=winput @> <@= type === 'timephase'? 'form-inline' : ''@>">
+        <@ if(type === 'input'){ @>
+            <input name="<@=field.name @>" class="form-control" 
+                <@= (queryexp && (queryexp == 'Reg')) ? 'placeholder="模糊查询"': '' @> 
+                <@=queryexp ? 'data-queryexp="' + queryexp + '"' : '' @> 
+                <@=required? 'required' : "" @> 
+                <@=field.readonly? 'readonly' : "" @> >
+        <@ } else if(type === 'datetime'){ @>
+            <div class="input-group date" 
+              <@ if(field.prototype === 'time'){ @>
+                data-date-format = "hh:ii"
+              <@ } else if(field.prototype === 'datetime') { @>
+                data-date-format = "yyyy-mm-dd hh:ii"
+              <@ } else { @>
+                data-date-format = "yyyy-mm-dd"
+              <@ } @>
+              
+              data-sharepage-control="<@=field.prototype @>">
+              <input name="<@=field.name @>" class="form-control" 
+                size="16" type="text" readonly=""
+                <@=queryexp ? 'data-queryexp="' + queryexp + '"' : '' @> >
+              <@if( field.allowEmpty ){ @>
+                <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+              <@ } @>
+              <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+            </div>
+
+        <@ } else if(type === 'timephase'){ @>
+            <div class="input-group date" 
+              <@ if(field.prototype === 'time'){ @>
+                data-date-format = "hh:ii"
+              <@ } else if(field.prototype === 'datetime') { @>
+                data-date-format = "yyyy-mm-dd hh:ii"
+              <@ } else { @>
+                data-date-format = "yyyy-mm-dd"
+              <@ } @>
+              data-sharepage-control="<@=field.prototype @>">
+              <input name="<@=field.name @>_start" class="form-control" size="10" type="text" readonly="">
+              <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+              <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+            </div>
+            <div class="input-group date" 
+              <@ if(field.prototype === 'time'){ @>
+                data-date-format = "hh:ii"
+              <@ } else if(field.prototype === 'datetime') { @>
+                data-date-format = "yyyy-mm-dd hh:ii"
+              <@ } else { @>
+                data-date-format = "yyyy-mm-dd"
+              <@ } @>
+              data-sharepage-control="<@=field.prototype @>">
+              <span class="input-group-addon">到</span>
+              <input name="<@=field.name @>_end" class="form-control" size="10" type="text" readonly="">
+              <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+              <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+            </div>
+
+
+        <@ } else if(type === 'select'){ @>
+            <select name="<@=field.name @>" class="form-control" 
+                  <@=required? 'required' : "" @> 
+                  <@=field.disabled? 'disabled' : "" @>>
+              <option value="">不选择</option>
+              <@ _.each( field.enums, function(dict){ @>
+                <option value=<@=dict.value  @>><@=dict.label  @></option>
+              <@ }) @>
+            </select>
+        <@ } @>
+        </div>
+    </div>
+<@ }); @>
+</script>
+
+<!-- 拼装查询页面字段列表模版 -->
+<script type="text/html" id="formFieldSetMacro">
+<@ 
+_.each( fieldset, function(field){ 
+    // 计算field的宽度
+    var wcol = 12 / (field.col || 1),
+        wlabel = wcol > 6 ? 2 : 4,
+        winput = wcol > 6 ? 10 : 8;
+
+    var required = field.required || false,
+        readonly = field.readonly || false,
+        type = field.type || 'input';
+@>
+    <div class="form-group col-md-<@=wcol @>">
+      <@ 
+      // 占整格的数据类型
+      if(type === 'uploader'){ @>
+        <div class="col-sm-12">
+          <div class="panel panel-default uploadpanel">
+            <div class="panel-heading"><@=field.label @></div>
+            <div class="panel-body"></div>
+            <div class="panel-footer container-fluid">
+              <div id="file" class="fileuploader" 
+                data-title="上传<@=field.label @>" 
+                data-target="<@=field.name @>" 
+                data-required="true"></div>
+            </div>
+          </div>
+        </div>
+      <@ } else { @>
+
+        <label class="col-sm-<@=wlabel @> control-label"><@=field.label @><@=required ? "*" : '' @></label>
+        <div class="col-sm-<@=winput @>">
+          <@ if(type === 'input'){ @>
+            <input type="text" name="<@=field.name @>" 
+                  class="form-control" <@=field.placeholder ? "placeholder=\"" + field.placeholder + "\"" : ''  @> 
+                  <@=required? 'required' : "" @> 
+                  <@=readonly? 'readonly data-sharepage-readonly="true"' : "" @>>
+                  
+          <@ } else if(type === 'span'){ @>
+            <span type="text" name="<@=field.name @>" class="form-control">
+
+          <@ } else if(type === 'number'){ @>
+            <input type="number" name="<@=field.name @>" class="form-control" 
+                  <@=required? 'required' : "" @>
+                  <@=readonly? 'readonly data-sharepage-readonly="true"' : "" @>>
+
+          <@ } else if(type === 'checkbox'){ @>
+            <label class="checkbox"><input name="<@=field.name @>" type="checkbox" value="true"> <@=field.tip @></label>
+
+          <@ } else if(type === 'button'){ @>
+            <button name="<@=field.name @>" type="button" class="btn btn-info"><@=field.value @></button>
+
+          <@ } else if(type === 'href'){ @>
+            <a name="<@=field.name @>" href="<@=field.href @>" target="<@=field.target @>" class="btn btn-info"><@=field.value @></a>
+
+          <@ } else if(type === 'text'){ @>
+            <textarea name="<@=field.name @>" class="form-control" style="height: 200px;" <@=field.placeholder ? "placeholder=\"" + field.placeholder + "\"" : ''  @> 
+                  <@=required? 'required' : "" @> 
+                  <@=readonly? 'readonly data-sharepage-readonly="true"' : "" @>></textarea>
+
+          <@ } else if(type === 'html'){ @>
+            <div name="<@=field.name @>" class="richedit" placeholder="输入内容" 
+                  <@=required? 'data-required="true"' : "" @> 
+                  <@=readonly? 'data-readonly="true"' : "" @> ></div>
+
+          <@ } else if(type === 'datetime'){ @>
+            <div class="input-group date" 
+              <@ if(field.prototype === 'time'){ @>
+                data-date-format = "hh:ii"
+              <@ } else if(field.prototype === 'datetime') { @>
+                data-date-format = "yyyy-mm-dd hh:ii"
+              <@ } else { @>
+                data-date-format = "yyyy-mm-dd"
+              <@ } @>
+              
+              data-sharepage-control="<@=field.prototype @>">
+              <input name="<@=field.name @>" class="form-control" size="16" type="text" readonly="" <@=required? 'required' : "" @> >
+              <@if( field.allowEmpty ){ @>
+                <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+              <@ } @>
+              <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+            </div>
+
+          <@ } else if(type === 'select'){ @>
+            <select name="<@=field.name @>" class="form-control" 
+                  <@=field.required? 'required' : "" @> 
+                  <@=field.readonly? 'readonly data-sharepage-readonly="true"' : "" @>
+                  <@=field.disabled ? 'disabled' : "" @>>
+              <@= field.allowEmpty ?  "<option>不选择</option>" : "" @>
+              <@ _.each( field.enums, function(dict){ @>
+                <option value=<@=dict.value  @>><@=dict.label  @></option>
+              <@ }) @>
+            </select>
+
+          <@ } else if(type === 'multiselect'){ @>
+            <div name="<@=field.name @>" class="well" 
+                  <@=field.required? 'required' : "" @> >
+              <@ _.each( field.enums, function(dict){ @>
+                <label class="checkbox-inline">
+                  <input type="checkbox" value="<@=dict.value  @>"
+                    <@=field.readonly? 'readonly  data-sharepage-readonly="true"' : "" @>
+                    <@=field.disabled ? 'disabled' : "" @>> <@= dict.label  @></label>
+              <@ }) @>
+            </div>
+
+          <@ } else if(type === 'sharepage-control'){ @>
+            <@= $.template(field.prototype,{
+                  field : field
+                }) @>
+          <@ } 
+        } @>
+        </div>
+    </div>
+<@ }); @>
+</script>
+
+<!-- 支持提示的输入和选择控件 -->
+<script type="text/html" id="typeahead">
+  <@if(!field.lastversion) { @>
+    [WARN] 速查框没有设置lastversion，会导致数据变动后前端不能立即刷新
+  <@ } @>
+  <input type="text" id="<@=field.name @>" class="form-control" 
+                  data-thumbprint="<@=field.lastversion @>"
+                  <@=field.required? 'required' : "" @> 
+                  <@=field.readonly? 'readonly' : "" @>>
+</script>
+
+<!-- 拼装查询页面字段列表模版 -->
+<script type="text/html" id="icon-select">
+  <div name="<@=field.name @>" class="input-group" data-sharepage-control='<@=field.prototype @>'>
+    <div class="input-group-btn">
+      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">选择 <span class="caret"></span></button>
+      <ul class="dropdown-menu"></ul>
+    </div>
+    <span class="glyphicon form-control"></span>
+  </div>
+</script>
+
+<!-- 模块选择列表 -->
+<script type="text/html" id="module-select">
+  <div name="<@=field.name @>" class="input-group" data-sharepage-control='<@=field.prototype @>'>
+    <div class="input-group-btn">
+      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">选择 <span class="caret"></span></button>
+      <ul class="dropdown-menu">
+        <li data-option="root"><a href="#">顶层模块</a></li>
+        <%
+        var moduleTree = commons.getModuleTree();
+        moduleTree.forEach(function(module){
+          if(!module.active) return;
+        %>
+          <li data-option="<%=module.module_id %>"><a><%=module.module_name %></a></li>
+        <% }); %>
+      </ul>
+    </div>
+    <input type="text" class="form-control" <@=field.required? 'required' : "" @> <@=field.readonly? 'readonly' : "" @>>
+  </div>
+</script>
+
+<!-- 拼装查询页面字段列表模版 -->
+<script type="text/html" id="formViewFieldSetMacro">
+<@ 
+_.each( fieldset, function(field){ 
+    // 计算field的宽度
+    var wcol = 12 / (field.col || 1),
+        wlabel = wcol > 6 ? 2 : 4,
+        winput = wcol > 6 ? 10 : 8;
+    var type = field.type || 'input';
+@>
+  <@ 
+  // 占整格的数据类型
+  if(type === 'uploader'){ @>
+    <div class="col-sm-12">  
+      <div class="panel panel-default">
+        <div class="panel-heading"><@=field.label @></div>
+        <div class="panel-body file-panel" data-target="<@=field.name @>"></div>
+      </div>
+    </div>
+  <@ } else { @>
+    <div class="form-group col-md-<@=wcol @>">
+        <label class="col-sm-<@=wlabel @> control-label"><@=field.label @></label>
+        <div class="col-sm-<@=winput @>">
+
+        <@  if(type === 'html'){ @>
+          <div name="<@=field.name @>" class="col-sm-12 well" data-type="html"></div>
+
+        <@ } else if(type === 'select'){ @>
+            <select name="<@=field.name @>" class="form-control" readonly disabled>
+              <option></option>
+              <@ _.each( field.enums, function(dict){ @>
+                <option value=<@=dict.value  @>><@=dict.label  @></option>
+              <@ }) @>
+            </select>
+        <@ } else { @>
+          <span name="<@=field.name @>" class="form-control col-sm-6"></span>
+        <@ } @>
+        </div>
+    </div>
+  <@ } @>
+<@ }); @>
+</script>
+
+<script type="text/html" id="action-list">
+    <div name="<@=opt.name @>" class="btn-group btn-group-sm" data-toggle="buttons" 
+      <@= opt.data ? 'data-data="' + opt.data + '"' : '' @>>
+      <@ _.each($M.ACTIONS, function(action){ @>
+        <label class="btn btn-default <@= (opt.checked.indexOf(action.action_id) >= 0) ? 'active' : '' @>" 
+            data-value="<@=action.action_id @>">
+          <input type="checkbox" autocomplete="off" <@= (opt.checked.indexOf(action.action_id) >= 0) ? 'checked' : '' @> >
+          <@=action.action_name @>
+          <span class="glyphicon <@=action.icon @>"></span>
+        </label>
+      <@ }); @>
+    </div>  
+</script>
+
+
+<script type="text/html" id="controlbarMacro">
+    <div class="container-fluid">
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav">
+          <@ _.each(actions, function(action) { 
+            if( !$M.hasRight(action.needright)) return;
+            if( action.actiongroup ){ @>
+              <li class="dropdown">
+                  <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    <span class="glyphicon <@=action.icon @>"></span> <@=action.title @> <b class="caret"></b>
+                  </a>
+                  <ul class="dropdown-menu">
+                  <@ _.each(action.actions, function(action) { @>
+                    <li <@= action.disabled ? 'class="disabled"' : '""'@> ><a <@= action.id ? 'id="' + action.id + '"' : '""'@> class="<@=action.action @>" href="#"><span class="<@=action.icon @>"></span> <@=action.title @></a></li>        
+                  <@ }); @>
+                  </ul>
+              </li>
+          <@ }else{ @>
+            <li <@= action.disabled ? 'class="disabled"' : '""'@> ><a <@= action.id ? 'id="' + action.id + '"' : '""'@> class="<@=action.action @>" href="#"><span class="<@=action.icon @>"></span> <@=action.title @></a></li>
+          <@ }
+          }) @>
+        </ul>
+        <form id="search-form" class="navbar-form navbar-right" role="search">
+          <div class="input-group">
+            <@
+            if(quicksearch){
+              var key = _.map(quicksearch, function(qs){ return qs.field }).join(',');
+              var placeholder = '模糊查询' + _.map(quicksearch, function(qs){ return qs.name }).join(',') + '...';
+            @>
+              <input name="quick_search_key" type="text" class="form-control" 
+                data-sharepage-quicksearch='<@=key @>'
+                placeholder="<@=placeholder @>" data-queryexp='Reg'>
+            <@}@>
+            <div class="input-group-btn">
+              <button type="submit" class="btn btn-default">查询</button>
+              <a id="searchBtnGroup" type="button" class="btn btn-default" data-toggle="button" autocomplete="off" aria-pressed="false">
+                更多条件 <span class="caret"></span>
+              </a>
+              <a id="editingBtnGroup" type="button" class="btn btn-default" data-toggle="button" autocomplete="off" aria-pressed="false">
+                编辑 <span class="glyphicon glyphicon-pencil"></span>
+              </a>
+            </div>
+          </div>
+        </form>
+      </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</script>
+

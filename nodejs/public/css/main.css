@@ -1,0 +1,554 @@
+/*
+ * Base structure
+ */
+
+/* Move down content because we have a fixed navbar that is 50px tall */
+body {
+  padding-top: 50px;
+  font-family: 'Open Sans', Arial, 'Hiragino Sans GB', 'Microsoft YaHei', 微软雅黑, STHeiti, 'WenQuanYi Micro Hei', SimSun, sans-serif;
+  transition: all .2s ease-in-out;
+}
+
+html, body {
+  height: 100%;
+  background: url(/images/bg.jpg) repeat #edece9;
+}
+
+/*
+ * Global add-ons
+ */
+
+.sub-header {
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.sub-navbar {
+  /*z-index : 1040;*/
+}
+
+.affix.sub-navbar {  
+  /*z-index : 1040;*/
+  top: 0px;
+}
+
+.affixed {
+  margin-top: 71px;
+}
+
+.moveout {
+  top: -51px;
+}
+
+.main-navbar{
+  transition: all .2s ease-out;  
+}
+
+/*
+ * Sidebar
+ */
+
+/* Hide for mobile, show later */
+.sidebar {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: 45px;
+    bottom: 0;
+    left: 0;
+    z-index: 1000;
+    display: block;
+    padding: 20px;
+    overflow-x: hidden;
+    overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+    background-color: #f5f5f5;
+    border-right: 1px solid #eee;
+  }
+}
+
+/* Sidebar navigation */
+.nav-sidebar {
+  margin-right: -21px; /* 20px padding + 1px border */
+  margin-bottom: 20px;
+  margin-left: -20px;
+}
+.nav-sidebar > li > a {
+  padding-right: 20px;
+  padding-left: 20px;
+}
+.nav-sidebar > .active > a {
+  color: #fff;
+  background-color: #428bca;
+}
+
+/*
+ * Main content
+ */
+/*
+.main {
+  padding: 20px;
+}
+@media (min-width: 768px) {
+  .main {
+    padding-right: 40px;
+    padding-left: 40px;
+  }
+}*/
+.main .page-header {
+  margin-top: 0;
+}
+
+.container-fluid {
+    margin: 0 auto;
+    height: 100%;
+    /* padding: 41px 0; */
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.main-container {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.painting .thumbnail {
+  box-shadow: 0 1px 3px rgba(0,0,0,.3);
+  -moz-box-shadow: 0 1px 3px rgba(0,0,0,.3);
+  -webkit-box-shadow: 0 1px 3px rgba(0,0,0,.3);
+}
+
+.painting .thumbnail a{
+  color: #000;
+}
+
+.alert {
+  z-index: 100;
+}
+
+.vertical-row {
+  display:-moz-box;
+  -moz-box-orient:horizontal;
+
+  display:-webkit-box;
+  -webkit-box-orient:horizontal;
+  
+  display:box;
+  box-orient:horizontal;
+
+  overflow-y: scroll;
+  min-height: 350px;
+}
+
+.vertical-row-head {
+  padding-right: 15px; 
+  padding-left: 15px; 
+  width: 100px;
+}
+
+.rotate {
+  -webkit-transform: rotate(-90deg);
+  -moz-transform: rotate(-90deg);
+  -ms-transform: rotate(-90deg);
+  -o-transform: rotate(-90deg);
+  transform: rotate(-90deg);
+
+  /* also accepts left, right, top, bottom coordinates; not required, but a good idea for styling */
+  -webkit-transform-origin: 50% 50%;
+  -moz-transform-origin: 50% 50%;
+  -ms-transform-origin: 50% 50%;
+  -o-transform-origin: 50% 50%;
+  transform-origin: 50% 50%;
+
+  /* Should be unset in IE9+ I think. */
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+}
+
+/* Customize the nav-justified links to be fill the entire space of the .navbar */
+.nav-justified {
+  background-color: #eee;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+.nav-justified > li > a {
+  padding-top: 15px;
+  padding-bottom: 15px;
+  margin-bottom: 0;
+  font-weight: bold;
+  color: #777;
+  text-align: center;
+  background-color: #e5e5e5; /* Old browsers */
+  background-image:    -moz-linear-gradient(top, #f5f5f5 0%, #e5e5e5 100%); /* FF3.6+ */
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f5f5f5), color-stop(100%,#e5e5e5)); /* Chrome,Safari4+ */
+  background-image: -webkit-linear-gradient(top, #f5f5f5 0%,#e5e5e5 100%); /* Chrome 10+,Safari 5.1+ */
+  background-image:      -o-linear-gradient(top, #f5f5f5 0%,#e5e5e5 100%); /* Opera 11.10+ */
+  background-image:         linear-gradient(top, #f5f5f5 0%,#e5e5e5 100%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f5f5f5', endColorstr='#e5e5e5',GradientType=0 ); /* IE6-9 */
+  background-repeat: repeat-x; /* Repeat the gradient */
+  border-bottom: 1px solid #d5d5d5;
+}
+.nav-justified > .active > a,
+.nav-justified > .active > a:hover,
+.nav-justified > .active > a:focus {
+  background-color: #ddd;
+  background-image: none;
+  box-shadow: inset 0 3px 7px rgba(0,0,0,.15);
+}
+.nav-justified > li:first-child > a {
+  border-radius: 5px 5px 0 0;
+}
+.nav-justified > li:last-child > a {
+  border-bottom: 0;
+  border-radius: 0 0 5px 5px;
+}
+
+@media (min-width: 768px) {
+  .nav-justified {
+    max-height: 52px;
+  }
+  .nav-justified > li > a {
+    border-right: 1px solid #d5d5d5;
+    border-left: 1px solid #fff;
+  }
+  .nav-justified > li:first-child > a {
+    border-left: 0;
+    border-radius: 5px 0 0 5px;
+  }
+  .nav-justified > li:last-child > a {
+    border-right: 0;
+    border-radius: 0 5px 5px 0;
+  }
+  .search-form {
+    width: 400px;
+  }
+}
+
+/* Responsive: Portrait tablets and up */
+@media screen and (min-width: 768px) {
+  /* Remove the padding we set earlier */
+  .masthead,
+  .marketing,
+  .footer {
+    padding-right: 0;
+    padding-left: 0;
+  }
+}
+
+
+/*.page-header {
+  padding-bottom: 9px;
+  margin: 40px 0 20px;
+  border-bottom: 1px solid #eee;
+}*/
+#mylove-painting {
+  height: 360px; 
+  width : 100%;
+}
+
+.header-icon {
+  position: absolute;
+  z-index: 9;
+  width: 100%;
+  top: 275px;
+}
+
+.header-icon > img {
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+
+.exhibit {
+  margin-top: 55px;
+}
+
+.exhibit-head {
+    border-bottom: 1px dashed #5bc0de;
+}
+
+.exhibit-head > span{
+    width: 160px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+/*
+ * 评论的题头图
+ */
+.comment-image {
+  position: relative;
+  padding: 45px 15px 15px;
+  margin: 0 -15px 15px;
+  background-color: #fafafa;
+  box-shadow: inset 0 3px 6px rgba(0,0,0,.05);
+  border-color: #e5e5e5 #eee #eee;
+  border-style: solid;
+  border-width: 1px 0;
+}
+/* Echo out a label for the example */
+.comment-image:after {
+  content: "赏析";
+  position: absolute;
+  top:  15px;
+  left: 15px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #bbb;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Tweak display of the code snippets when following an example */
+.comment-image + .highlight {
+  margin: -15px -15px 15px;
+  border-radius: 0;
+  border-width: 0 0 1px;
+}
+
+/* Make the examples and snippets not full-width */
+@media (min-width: 768px) {
+  .comment-image {
+    margin-left: 0;
+    margin-right: 0;
+    background-color: #fff;
+    border-width: 1px;
+    border-color: #ddd;
+    border-radius: 4px 4px 0 0;
+    box-shadow: none;
+  }
+  .comment-image + .highlight {
+    margin-top: -16px;
+    margin-left: 0;
+    margin-right: 0;
+    border-width: 1px;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+  }
+}
+
+/* Undo width of container */
+.comment-image .container {
+  width: auto;
+}
+
+/*
+ * 评论文字
+ */
+.highlight {
+  padding: 9px 14px;
+  margin-bottom: 14px;
+  background-color: #f7f7f9;
+  border: 1px solid #e1e1e8;
+  border-radius: 4px;
+}
+.highlight pre {
+  padding: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+  background-color: transparent;
+  border: 0;
+  white-space: nowrap;
+}
+
+/* Show code snippets when we have the space */
+@media (min-width: 481px) {
+  .highlight {
+    display: block;
+  }
+}
+
+/*
+ * Glyphicons
+ *
+ * Special styles for displaying the icons and their classes in the docs.
+ */
+
+.comment-ctl {
+  padding-left: 0;
+  list-style: none;
+  overflow: hidden;
+  margin-bottom: 0px;
+}
+.comment-ctl li {
+  float: right;
+  width: 25%;
+  margin: 0 -1px -1px 0;
+  font-size: 12px;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.comment-ctl a, .comment-image a{
+  width: 100%;
+  color: #000;  
+  display: block;
+}
+
+.comment-ctl a.hide{
+  display: none;
+}
+
+.comment-ctl .glyphicon {
+  margin-top: 5px;
+  margin-bottom: 10px;
+  /* font-size: 24px; */
+}
+.comment-ctl .glyphicon-class {
+  display: block;
+  text-align: center;
+  word-wrap: break-word; /* Help out IE10+ with class names */
+}
+.comment-ctl li:hover {
+  background-color: rgba(86,61,124,.1);
+}
+
+.comment-content .comment-input{
+  width: 100%; 
+  height: 60px;
+}
+
+
+.comment-image-wrap .glyphicon-pushpin{
+  position: absolute;
+  right: 20px;
+  top: -30px;  
+  width: 100%;
+  height: 30px;
+  text-align: right;
+}
+
+.popup {
+  opacity: 0.4;
+  -webkit-transform: scale(1.4) translate(-26px,-7px);
+  -moz-transform: scale(1.4)  translate(-26px,-7px);
+  -moz-transform: scale(1.4)  translate(-26px,-7px);
+  -ms-transform: scale(1.4)  translate(-26px,-7px);
+  -o-transform: scale(1.4)  translate(-26px,-7px);
+  transform: scale(1.4)  translate(-26px,-7px);
+  box-shadow: 0 2px 4px rgba(0,0,0,1);
+  -moz-box-shadow: 0 2px 4px rgba(0,0,0,1);
+  -webkit-box-shadow: 0 2px 4px rgba(0,0,0,1);
+}
+
+.leaflet-control{
+  transition: all .3s ease-in-out;  
+}
+
+/* ======= 树结构 ======= */
+.tree {
+    min-height:20px;
+    padding:19px;
+    margin-bottom:20px;
+    background-color:#fbfbfb;
+    border:1px solid #999;
+    -webkit-border-radius:4px;
+    -moz-border-radius:4px;
+    border-radius:4px;
+    -webkit-box-shadow:inset 0 1px 1px rgba(0, 0, 0, 0.05);
+    -moz-box-shadow:inset 0 1px 1px rgba(0, 0, 0, 0.05);
+    box-shadow:inset 0 1px 1px rgba(0, 0, 0, 0.05)
+}
+.tree li {
+    list-style-type:none;
+    margin:0;
+    padding:10px 5px 0 5px;
+    position:relative
+}
+.tree li::before, .tree li::after {
+    content:'';
+    left:-20px;
+    position:absolute;
+    right:auto
+}
+.tree li::before {
+    border-left:1px solid #999;
+    bottom:50px;
+    height:100%;
+    top:0;
+    width:1px
+}
+.tree li::after {
+    border-top:1px solid #999;
+    height:20px;
+    top:25px;
+    width:25px
+}
+.tree li span {
+    -moz-border-radius:5px;
+    -webkit-border-radius:5px;
+    border:1px solid #999;
+    border-radius:5px;
+    display:inline-block;
+    padding:3px 8px;
+    text-decoration:none
+}
+.tree li.parent_li>span {
+    cursor:pointer
+}
+.tree>ul>li::before, .tree>ul>li::after {
+    border:0
+}
+.tree li:last-child::before {
+    height:30px
+}
+.tree li.parent_li>span:hover, .tree li.parent_li>span:hover+ul li span {
+    background:#eee;
+    border:1px solid #94a0b4;
+    color:#000
+}
+
+.age-navi {
+  line-height: 1.5;  
+}
+
+.container {
+    width: 100%;
+}
+
+
+@media (min-width: 994px) {
+  .img-div {
+    height: 100%;
+    border-right: 1px dashed #ddd;
+  }
+
+  .painting.small .thumbnail{
+    height: 260px; 
+    overflow: hidden;
+  }
+
+  .painting .thumbnail{
+    height: 400px; 
+    overflow: hidden;
+  }
+}
+
+.img-div-h {
+  height: 136px;
+  border-bottom: 1px dashed #ddd;
+  display: block;
+  z-index: 1000;
+}
+
+.img-div {
+    display: block;
+}
+
+#ds-login-bar > .ds-icons-32 a{
+  display: inline-block;
+  margin-left : 10px;
+}
+
+.action-ctl, .search-panel {
+  display: none;
+}
+
+#art-is-fun {
+  font-size: small;
+  padding: 2px;
+  height: 50px;
+}
+

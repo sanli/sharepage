@@ -1,0 +1,118 @@
+<% 
+/* 本文件由sharecli.js自动产生, 命令行为: node share.js gen <$=module_name $> */ 
+%>
+
+<$ if(options.widget.list){ $>
+<!-- <$=options.module_desc $>列表对话框 -->
+<div id="<$=module_name $>_listDlg" class="modal fade"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 class="header-text"><$=options.module_desc $>信息列表</h3>
+      </div>
+      <div class="modal-body">
+        <!-- 数据查询结果表格 -->
+        <div id="<$=module_name $>_cellDiv" class="panel panel-default">
+          <div class="panel-heading"><$=options.module_desc $>数据列表</div>
+          <table id="<$=module_name $>_cellTable" class="table table-bordered table-hover"></table>
+          <div class="panel-footer"><div id="<$=module_name $>_pagebar"></div></div>
+          <!-- TODO:  修改表格的字段列表以及支持的Action列表 -->
+          <script type="text/html" id="<$=module_name $>_cellTableTmpl">
+            <@= $.template('cellTableBase', { 
+              /* TODO: 修改字段列表 */
+              fieldset :[
+                { field: 'module_name' , title : '模块名称', canSort: true,showViewLink : true }, 
+                { field: 'icon' , title : '模块图标', canSort: false }, 
+                { field: 'url', title: 'URL', canSort: true }
+              ],
+
+              /* 控制Action列表 */
+              actions : [],
+              opt : {},
+              /* Cell基本数据 */
+              cells : cells,
+              sort : sort
+            }) @>
+          </script>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn cancle" data-dismiss="modal" aria-hidden="true">关闭</button>
+      </div>
+    </div>
+  </div>
+</div> <!-- <$=options.module_desc $>列表对话框 -->
+<$ } $>
+
+<$ if(options.widget.create || options.widget.update){ $>
+<!-- <$=options.module_desc $>编辑修改对话框 -->
+<div id="<$=module_name $>_moduleDlg" class="modal fade"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 class="header-text">修改<$=options.module_desc $>信息</h3>
+      </div>
+      <div class="modal-body">
+        <ul class="nav nav-tabs" id="buildingNavtab">
+            <li class="active"><a href="#b1" data-toggle="tab">基本<$=options.module_desc $>信息</a></li>
+        </ul>
+        <div style="padding: 10px;">
+          <!-- TODO : 修改下面的数据字段 -->
+          <form id="<$=module_name $>_module-form" class="form-horizontal" role="form">
+            <fieldset data-sharepage-macro="formFieldSetMacro">
+            { /* 查询字段 */
+              fieldset :[
+                { name : 'module_name' , label: '模块名称', required: true }, 
+                  { name : 'icon' , label: 'ICON', required: false, readonly : false }, 
+                  { name : 'url' , label: 'URL', required: true, readonly : false }, 
+                  { name : 'parent_id' , label: '父模块', required: true }]
+            }
+            </fieldset>
+          </form>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn cancle" data-dismiss="modal" aria-hidden="true">取消</button>
+        <button id="saveBtn" class="btn btn-primary" data-doing-text="正在保存...">确定</button>
+      </div>
+    </div>
+  </div>
+</div> <!-- <$=options.module_desc $>编辑修改对话框 -->
+<$ } $>
+
+<$ if(options.widget.view){ $>
+<!--  <$=options.module_desc $>信息对话框 -->
+<div id="<$=module_name $>_moduleViewDlg" class="modal fade"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 class="header-text">模块信息</h3>
+      </div>
+      <div class="modal-body">
+        <ul class="nav nav-tabs" id="buildingNavtab">
+            <li class="active"><a href="#b1" data-toggle="tab"><$=options.module_desc $>基本信息</a></li>
+        </ul>
+        <div style="padding: 10px;">
+          <form id="<$=module_name $>_module-form-view" class="form-horizontal" role="form">
+            <fieldset data-sharepage-macro="formViewFieldSetMacro">
+            { /* 查询字段 */
+              fieldset :[
+                { name : 'module_name' , label: '模块名称'}, 
+                  { name : 'icon' , label: 'ICON' }, 
+                  { name : 'url' , label: 'URL' }, 
+                  { name : 'parent_id' , label: '父模块'}]
+            }
+            </fieldset>
+          </form>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn cancle" data-dismiss="modal" aria-hidden="true">关闭</button>
+      </div>
+    </div>
+  </div>
+</div><!-- <$=options.module_desc $>信息对话框 -->
+<$ } $>
